@@ -1,0 +1,62 @@
+pipeline {
+    agent any
+    environment {
+        GITHUB_TOKEN = credentials('github-token') // ID des identifiants GitHub dans Jenkins
+    }
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Cloner le code source depuis GitHub
+                checkout scm
+            }
+        }
+        stage('Install Playwright') {
+            steps {
+                // Installer Playwright avec la commande demandée
+                sh '''
+                    npm init playwright@latest --yes --quiet --browser=chromium --browser=firefox --browser=webkit --gha
+                '''
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                // Installer les dépendances
+                sh 'npm install'
+            }
+        }
+        stage('Run Playwright Tests') {
+            steps {
+                // Exécuter les tests Playwright
+                sh 'npx playwright test --reporter=dot,junit'
+            }
+        }
+        stage('Publish Test Results') {
+            steps {
+                // Publier les rapports JUnit
+                junit '**/test-results/*.xml'
+            }
+        }
+        stage('Publish HTML Report') {
+            steps {
+                // Publier le rapport HTML généré par Playwright
+                publishHTML(target: [
+                    reportDir: 'playwright-report',
+                    reportFiles: 'index.html',
+                    reportName: 'Playwright Test Report',
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true
+                ])
+            }
+        }
+    }
+    post {
+        always {
+            // Archiver les rapports
+            archiveArtifacts artifacts: 'playwright-report/**/*.*', fingerprint: true
+        }
+        failure {
+            // Notification d'échec
+            echo 'Build failed! Check the reports for details.'
+        }
+    }
+}
