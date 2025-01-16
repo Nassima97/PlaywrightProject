@@ -27,36 +27,44 @@ pipeline {
         stage('Run Playwright Tests') {
             steps {
                 // Exécuter les tests Playwright
-                bat 'npx playwright test --reporter=dot,junit'
+                bat 'npx playwright test'
             }
         }
-        stage('Publish Test Results') {
-            steps {
-                // Publier les rapports JUnit
-                junit '**/test-results/*.xml'
-            }
-        }
-        stage('Publish HTML Report') {
-            steps {
-                // Publier le rapport HTML généré par Playwright
-                publishHTML(target: [
-                    reportDir: 'playwright-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Playwright Test Report',
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true
-                ])
-            }
-        }
+        // stage('Publish Test Results') {
+        //     steps {
+        //         // Publier les rapports JUnit
+        //         junit '**/test-results/*.xml'
+        //     }
+        // }
+        // stage('Publish HTML Report') {
+        //     steps {
+        //         // Publier le rapport HTML généré par Playwright
+        //         publishHTML(target: [
+        //             reportDir: 'playwright-report',
+        //             reportFiles: 'index.html',
+        //             reportName: 'Playwright Test Report',
+        //             alwaysLinkToLastBuild: true,
+        //             keepAll: true
+        //         ])
+        //     }
+        // }
     }
     post {
         always {
-            // Archiver les rapports
-            archiveArtifacts artifacts: 'playwright-report/**/*.*', fingerprint: true
+            archiveArtifacts artifacts: 'playwright-report/**', fingerprint: true
+            junit 'playwright-report/results.xml'
+
+            publishHTML(target: [
+                reportName: 'Playwright Test Report',
+                reportDir: 'playwright-report',
+                reportFiles: 'index.html'
+            ])
         }
+
         failure {
-            // Notification d'échec
-            echo 'Build failed! Check the reports for details.'
+            mail to: 'amal.khemiri5@gmail.com', 
+                 subject: "Build #${env.BUILD_NUMBER} Failed", 
+                 body: "The build has failed. Please check the Jenkins console output for more details: ${env.BUILD_URL}"
         }
     }
 }
