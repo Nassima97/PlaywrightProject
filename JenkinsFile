@@ -13,7 +13,7 @@ pipeline {
         stage('Install Playwright') {
             steps {
                 // Installer Playwright avec la commande demandée
-                sh '''
+                bat '''
                     npm init playwright@latest --yes --quiet --browser=chromium --browser=firefox --browser=webkit --gha
                 '''
             }
@@ -21,13 +21,13 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 // Installer les dépendances
-                sh 'npm install'
+                bat 'npm install'
             }
         }
         stage('Run Playwright Tests') {
             steps {
                 // Exécuter les tests Playwright
-                sh 'npx playwright test --reporter=dot,junit'
+                bat 'npx playwright test --reporter=dot,junit'
             }
         }
         stage('Publish Test Results') {
