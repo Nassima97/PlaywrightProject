@@ -1,0 +1,24 @@
+[
+    {
+        "genre": "man",
+        "Pays_de_naissance": "FR",
+        "Email": "John@gmail.com",
+        "Name": "John Doe",
+        "Phone": "+3376543210",
+        "Address": "1 rue gustave 75001 Paris",
+        "Message": "Je veux creer un compte",
+        "Product": "car",
+        "loisir": "Sport"
+    },
+    {
+        "genre": "women",
+        "Pays_de_naissance": "ES",
+        "Email": "Cristine@gmail.com",
+        "Name": "cristine leyral",
+        "Phone": "076543210",
+        "Address": "1 rue vicor 75002 Paris",
+        "Message": "Je veux creer un compte pour pouvoir acheter",
+        "Product": "mot",
+        "loisir": "Littérature"
+    }
+]
